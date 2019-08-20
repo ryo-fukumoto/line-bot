@@ -1,7 +1,8 @@
 class WebhookController < ApplicationController
-
   require 'line/bot'
+  require 'wikipedia'
 
+  # callbakアクションのCSRFトークン認証を無効化
   protect_from_forgery except: :callback
 
   def callback
@@ -14,13 +15,34 @@ class WebhookController < ApplicationController
 
     events = client.parse_events_from(body)
     events.each { |event|
+
+      if event.message['text'] != nil
+        #LINEで送られてきた文書を取得
+        word = event.message['text']
+      end
+
+      #日本語版wikipediaの設定
+      Wikipedia.Configure {
+        domain 'ja.wikipedia.org'
+        path   'w/api.php'
+      }
+
+      #wikipediaから情報を取得する
+      page = Wikipedia.find(word)
+
+      #内容とURLを返す
+      response = page.summary + "\n" + page.fullurl
+
       case event
+        #メッセージが送信された場合
       when Line::Bot::Event::Message
         case event.type
+
+          #メッセージが送られてきた場合
         when Line::Bot::Event::MessageType::Text
           message = {
             type: 'text',
-            text: event.message['text']
+            text: response
           }
           client.reply_message(event['replyToken'], message)
         end
@@ -38,5 +60,4 @@ class WebhookController < ApplicationController
       config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
     }
   end
-
 end
