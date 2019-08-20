@@ -28,7 +28,7 @@ class WebhookController < ApplicationController
       }
 
       #wikipediaから情報を取得する
-      if page = Wikipedia.find(word)
+      page = Wikipedia.find(word)
 
       #内容とURLを返す
       response = page.summary + "\n" + page.fullurl
@@ -47,19 +47,6 @@ class WebhookController < ApplicationController
           client.reply_message(event['replyToken'], message)
         end
       end
-      else case event
-        #メッセージが送信された場合
-      when Line::Bot::Event::Message
-        case event.type
-
-          #メッセージが送られてきた場合
-        when Line::Bot::Event::MessageType::Text
-          message = {
-            type: 'text',
-            text: "検索できなかった・・・"
-          }
-          client.reply_message(event['replyToken'], message)
-        end
     }
 
     head :ok
