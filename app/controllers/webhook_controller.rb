@@ -49,12 +49,19 @@ class WebhookController < ApplicationController
         end
       end
       else
-        when Line::Bot::Event::MessageType::Text
-          nomessage = {
-            type: 'text',
-            text: "見つかりませんでした"
-          }
-          client.reply_message(event['replyToken'], nomessage)
+        case event
+          #メッセージが送信された場合
+        when Line::Bot::Event::Message
+          case event.type
+  
+            #メッセージが送られてきた場合
+          when Line::Bot::Event::MessageType::Text
+            nomessage = {
+              type: 'text',
+              text: "見つかりませんでした"
+            }
+            client.reply_message(event['replyToken'], nomessage)
+          end
         end
       end
     }
