@@ -29,15 +29,9 @@ class WebhookController < ApplicationController
 
       #wikipediaから情報を取得する
       page = Wikipedia.find(word)
-      if page = ""
       #内容とURLを返す
-      response = "無いよ"
+        response = page.summary + "\n" + page.fullurl
         
-      else
-        response = "#{page.summary + \n + page.fullurl}"
-      end
-
-
       case event
         #メッセージが送信された場合
       when Line::Bot::Event::Message
