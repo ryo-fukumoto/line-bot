@@ -34,7 +34,7 @@ class WebhookController < ApplicationController
       response = "無いよ"
         
       else
-        response = page.summary + "\n" + page.fullurl
+        response = "#{page.summary + \n + page.fullurl}"
       end
 
 
