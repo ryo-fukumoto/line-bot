@@ -28,7 +28,8 @@ class WebhookController < ApplicationController
       }
 
       #wikipediaから情報を取得する
-      if page = Wikipedia.find(word)
+      page = Wikipedia.find(word)
+      if page.length != 0
       #内容とURLを返す
         response = page.summary + "\n" + page.fullurl
       else
