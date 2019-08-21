@@ -59,7 +59,7 @@ class WebhookController < ApplicationController
         when Line::Bot::Event::MessageType::Location
           message = {
             type: 'text',
-            text: weather
+            text: response
           }
           client.reply_message(event['replyToken'], message)
         end
