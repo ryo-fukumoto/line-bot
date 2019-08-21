@@ -23,7 +23,6 @@ class WebhookController < ApplicationController
       if event.message['text']
         #LINEで送られてきた文書を取得
         word = event.message['text']
-      end
       #日本語版wikipediaの設定
       Wikipedia.Configure {
         domain 'ja.wikipedia.org'
@@ -33,9 +32,10 @@ class WebhookController < ApplicationController
       page = Wikipedia.find(word)
       #内容とURLを返す
       response = page.summary + "\n" + page.fullurl
+      end
 
       #天気情報の設定
-      
+      if event.message['location']
       uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
       json = Net::HTTP.get(uri)
       result = JSON.parse(json)
@@ -43,6 +43,7 @@ class WebhookController < ApplicationController
       min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
       max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
       weather = today_tel + "\n" + min_tem + "\n" + max_tem
+      end
 
       case event
         #メッセージが送信された場合
@@ -50,17 +51,17 @@ class WebhookController < ApplicationController
           
         case event.type
           #メッセージが送られてきた場合
-        when Line::Bot::Event::MessageType::Text
-          message = {
-            type: 'text',
-            text: weather
-          }
-          
-        when Line::Bot::Event::MessageType::Location
-          message = {
-            type: 'text',
-            text: 'おはよう'
-          }
+          when Line::Bot::Event::MessageType::Text
+            message = {
+              type: 'text',
+              text: response
+            }
+            
+          when Line::Bot::Event::MessageType::Location
+            message = {
+              type: 'text',
+              text: 'おはよう'
+            }
         end
       end
       client.reply_message(event['replyToken'], message)
