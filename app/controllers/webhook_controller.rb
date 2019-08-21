@@ -51,7 +51,7 @@ class WebhookController < ApplicationController
           #メッセージが送られてきた場合
         when Line::Bot::Event::MessageType::Location
           message = {
-            type: 'text',
+            type: 'location',
             text: 'おはよう'
           }
           client.reply_message(event['replyToken'], message)
