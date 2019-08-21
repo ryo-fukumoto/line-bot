@@ -35,7 +35,7 @@ class WebhookController < ApplicationController
       response = page.summary + "\n" + page.fullurl
 
       #天気情報の設定
-      if event.message['location']
+      
       uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
       json = Net::HTTP.get(uri)
       result = JSON.parse(json)
@@ -43,7 +43,6 @@ class WebhookController < ApplicationController
       min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
       max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
       weather = today_tel + "\n" + min_tem + "\n" + max_tem
-      end
 
       case event
         #メッセージが送信された場合
@@ -54,7 +53,7 @@ class WebhookController < ApplicationController
         when Line::Bot::Event::MessageType::Text
           message = {
             type: 'text',
-            text: response
+            text: today_tel
           }
           
         when Line::Bot::Event::MessageType::Location
