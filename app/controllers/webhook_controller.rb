@@ -49,7 +49,7 @@ class WebhookController < ApplicationController
         case event.type
 
           #メッセージが送られてきた場合
-        when Line::Bot::Event::MessageType::Text
+        when Line::Bot::Event::MessageType::Location
           message = {
             type: 'text',
             text: 'おはよう'
