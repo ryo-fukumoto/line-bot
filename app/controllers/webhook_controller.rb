@@ -1,6 +1,9 @@
 class WebhookController < ApplicationController
   require 'line/bot'
   require 'wikipedia'
+  require 'net/http'
+  require 'uri'
+  require 'json'
 
   # callbakアクションのCSRFトークン認証を無効化
   protect_from_forgery except: :callback
@@ -16,22 +19,29 @@ class WebhookController < ApplicationController
     events = client.parse_events_from(body)
     events.each { |event|
 
+      #wikipediaの設定
       if event.message['text'] != nil
         #LINEで送られてきた文書を取得
         word = event.message['text']
       end
-
       #日本語版wikipediaの設定
       Wikipedia.Configure {
         domain 'ja.wikipedia.org'
         path   'w/api.php'
       }
-
       #wikipediaから情報を取得する
       page = Wikipedia.find(word)
-      
       #内容とURLを返す
       response = page.summary + "\n" + page.fullurl
+
+      #天気情報の設定
+      uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
+      json = Net::HTTP.get(uri)
+      result = JSON.parse(json)
+      today_tel = result['forecasts'][0]['telop']
+      min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
+      max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
+      weather = today_tel + "\n" + min_tem + "\n" + max_tem
 
       case event
         #メッセージが送信された場合
@@ -45,10 +55,16 @@ class WebhookController < ApplicationController
             text: response
           }
           client.reply_message(event['replyToken'], message)
+
+        when Line::Bot::Event::MessageType::Location
+          message = {
+            type: 'text',
+            text: weather
+          }
+          client.reply_message(event['replyToken'], message)
         end
       end
     }
-
     head :ok
   end
 
