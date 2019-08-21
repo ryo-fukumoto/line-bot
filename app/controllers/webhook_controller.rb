@@ -42,7 +42,7 @@ class WebhookController < ApplicationController
       today_tel = result['forecasts'][0]['telop']
       min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
       max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
-      weather = today_tel + "\n" + min_tem + "\n" + max_tem
+      weather = "今日の天気は#{today_tel}" + "\n" + "最低気温#{min_tem}℃" + "\n" + "最高気温#{max_tem}℃"
       end
 
       case event
@@ -60,7 +60,7 @@ class WebhookController < ApplicationController
           when Line::Bot::Event::MessageType::Location
             message = {
               type: 'text',
-              text: 'おはよう'
+              text: weather
             }
         end
       end
