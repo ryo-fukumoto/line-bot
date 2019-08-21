@@ -65,9 +65,10 @@ class WebhookController < ApplicationController
           }
           client.reply_message(event['replyToken'], message)
       end
+    }
     head :ok
   end
-}
+
 
   private
 
