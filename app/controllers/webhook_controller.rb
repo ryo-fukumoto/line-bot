@@ -20,7 +20,7 @@ class WebhookController < ApplicationController
     events.each { |event|
 
       #wikipediaの設定
-      if event.message['text'] != nil
+      if event.message['text']
         #LINEで送られてきた文書を取得
         word = event.message['text']
       end
@@ -35,6 +35,7 @@ class WebhookController < ApplicationController
       response = page.summary + "\n" + page.fullurl
 
       #天気情報の設定
+      if event.message['location']
       uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
       json = Net::HTTP.get(uri)
       result = JSON.parse(json)
@@ -42,6 +43,7 @@ class WebhookController < ApplicationController
       min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
       max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
       weather = today_tel + "\n" + min_tem + "\n" + max_tem
+      end
 
       case event
         #メッセージが送信された場合
