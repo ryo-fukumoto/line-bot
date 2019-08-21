@@ -58,7 +58,7 @@ class WebhookController < ApplicationController
           when Line::Bot::Event::MessageType::Location
             message = {
               type: 'text',
-              text: "おはよう"
+              text: weather
             }
         end
       end
