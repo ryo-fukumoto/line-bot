@@ -45,9 +45,9 @@ class WebhookController < ApplicationController
 
       case event
         #メッセージが送信された場合
-      when Line::Bot::Event::Message
-
-        case event.type == text
+        when Line::Bot::Event::Message
+          
+        case event.type
           #メッセージが送られてきた場合
         when Line::Bot::Event::MessageType::Text
           message = {
@@ -55,20 +55,18 @@ class WebhookController < ApplicationController
             text: response
           }
           client.reply_message(event['replyToken'], message)
-        end
 
-        case event.type == location
         when Line::Bot::Event::MessageType::Location
           message = {
             type: 'text',
             text: 'おはよう'
           }
           client.reply_message(event['replyToken'], message)
+        end
       end
     }
     head :ok
   end
-
 
   private
 
