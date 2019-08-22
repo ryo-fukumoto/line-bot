@@ -63,7 +63,8 @@ class WebhookController < ApplicationController
             latitude = event.message['latitude'] # 緯度
             longitude = event.message['longitude'] # 経度
             location_response = open(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
-            weather = JSON.pretty_generate(JSON.parse(location_response.read))
+            response = JSON.parse(location_response.read))
+            weather = response['weather'][0]['description']
             message = {
               type: 'text',
               text: weather
