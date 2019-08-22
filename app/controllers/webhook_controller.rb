@@ -39,13 +39,13 @@ class WebhookController < ApplicationController
       end
 
       #天気情報の設定
-      uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
-      json = Net::HTTP.get(uri)
-      result = JSON.parse(json)
-      today_tel = result['forecasts'][0]['telop']
-      min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
-      max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
-      weather = "今日の天気は#{today_tel}" + "\n" + "最低気温#{min_tem}℃" + "\n" + "最高気温#{max_tem}℃"
+      # uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
+      # json = Net::HTTP.get(uri)
+      # result = JSON.parse(json)
+      # today_tel = result['forecasts'][0]['telop']
+      # min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
+      # max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
+      # weather = "今日の天気は#{today_tel}" + "\n" + "最低気温#{min_tem}℃" + "\n" + "最高気温#{max_tem}℃"
 
       case event
         #メッセージが送信された場合
@@ -60,11 +60,11 @@ class WebhookController < ApplicationController
             }
           #位置情報が送信された場合
           when Line::Bot::Event::MessageType::Location
-            # latitude = event.message['latitude'] # 緯度
-            # longitude = event.message['longitude'] # 経度
-            # location_response = open(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
-            # response = JSON.parse(location_response.read))
-            # weather = response['weather'][0]['description']
+            latitude = event.message['latitude'] # 緯度
+            longitude = event.message['longitude'] # 経度
+            location_response = open(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
+            result = JSON.parse(location_response.read))
+            weather = result[:list][0][:main][:temp]
             message = {
               type: 'text',
               text: weather
