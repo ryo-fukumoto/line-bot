@@ -4,6 +4,10 @@ class WebhookController < ApplicationController
   require 'net/http'
   require 'uri'
   require 'json'
+  require "open-uri"
+  API_KEY = "07233f6700c510c4a78b505afa2bb250"
+  BASE_URL = "http://api.openweathermap.org/data/2.5/forecast"
+
 
   # callbakアクションのCSRFトークン認証を無効化
   protect_from_forgery except: :callback
@@ -23,39 +27,43 @@ class WebhookController < ApplicationController
       if event.message['text']
         #LINEで送られてきた文書を取得
         word = event.message['text']
-      #日本語版wikipediaの設定
-      Wikipedia.Configure {
-        domain 'ja.wikipedia.org'
-        path   'w/api.php'
-      }
-      #wikipediaから情報を取得する
-      page = Wikipedia.find(word)
-      #内容とURLを返す
-      response = page.summary + "\n" + page.fullurl
+        #日本語化
+        Wikipedia.Configure {
+          domain 'ja.wikipedia.org'
+          path   'w/api.php'
+        }
+        #wikipediaから情報を取得する
+        page = Wikipedia.find(word)
+        #内容とURLを返す
+        text_response = page.summary + "\n" + page.fullurl
       end
 
       #天気情報の設定
-      uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
-      json = Net::HTTP.get(uri)
-      result = JSON.parse(json)
-      today_tel = result['forecasts'][0]['telop']
-      min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
-      max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
-      weather = "今日の天気は#{today_tel}" + "\n" + "最低気温#{min_tem}℃" + "\n" + "最高気温#{max_tem}℃"
+      # uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
+      # json = Net::HTTP.get(uri)
+      # result = JSON.parse(json)
+      # today_tel = result['forecasts'][0]['telop']
+      # min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
+      # max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
+      # weather = "今日の天気は#{today_tel}" + "\n" + "最低気温#{min_tem}℃" + "\n" + "最高気温#{max_tem}℃"
 
       case event
         #メッセージが送信された場合
         when Line::Bot::Event::Message
           
         case event.type
-          #メッセージが送られてきた場合
+          #テキストが送信された場合
           when Line::Bot::Event::MessageType::Text
             message = {
               type: 'text',
-              text: response
+              text: text_response
             }
-            
+          #位置情報が送信された場合
           when Line::Bot::Event::MessageType::Location
+            latitude = event.message['latitude'] # 緯度
+            longitude = event.message['longitude'] # 経度
+            location_response = open(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
+            weather = JSON.pretty_generate(JSON.parse(location_response.read))
             message = {
               type: 'text',
               text: weather
