@@ -62,8 +62,9 @@ class WebhookController < ApplicationController
           when Line::Bot::Event::MessageType::Location
             latitude = event.message['latitude'] # 緯度
             longitude = event.message['longitude'] # 経度
-            location_response = open(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
-            result = JSON.parse(location_response.read)
+            uri = URI.parse(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
+            json = Net::HTTP.get(uri)
+            result = JSON.parse(json)
             weather = result[:list][0][:main][:temp]
             message = {
               type: 'text',
