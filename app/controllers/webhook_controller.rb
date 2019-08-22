@@ -50,9 +50,9 @@ class WebhookController < ApplicationController
             longitude = event.message['longitude'] # 経度
             uri = URI.parse(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
             json = Net::HTTP.get(uri)
-            result = JSON.parse(json)
-            weather_status = result['list'][0]['weather'][0]['main']
-            temp = result['list'][0]['main']['temp']
+            result = JSON.parse(json, symbolize_names: true)
+            weather_status = result[:list][0][:weather][0][:main]
+            temp = result[:list][0][:main][:temp]
             #ケルビンをセルシウス度に変換
             celsius = temp - 273.15
             celsius_round = celsius.round
