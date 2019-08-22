@@ -22,31 +22,6 @@ class WebhookController < ApplicationController
 
     events = client.parse_events_from(body)
     events.each { |event|
-
-      #wikipediaの設定
-      if event.message['text']
-        #LINEで送られてきた文書を取得
-        word = event.message['text']
-        #日本語化
-        Wikipedia.Configure {
-          domain 'ja.wikipedia.org'
-          path   'w/api.php'
-        }
-        #wikipediaから情報を取得する
-        page = Wikipedia.find(word)
-        #内容とURLを返す
-        response = page.summary + "\n" + page.fullurl
-      end
-
-      #天気情報の設定
-      # uri = URI.parse('http://weather.livedoor.com/forecast/webservice/json/v1?city=270000')
-      # json = Net::HTTP.get(uri)
-      # result = JSON.parse(json)
-      # today_tel = result['forecasts'][0]['telop']
-      # min_tem =   result['forecasts'][1]['temperature']['min']['celsius']
-      # max_tem =   result['forecasts'][1]['temperature']['max']['celsius']
-      # weather = "今日の天気は#{today_tel}" + "\n" + "最低気温#{min_tem}℃" + "\n" + "最高気温#{max_tem}℃"
-
       case event
         #メッセージが送信された場合
         when Line::Bot::Event::Message
@@ -54,6 +29,17 @@ class WebhookController < ApplicationController
         case event.type
           #テキストが送信された場合
           when Line::Bot::Event::MessageType::Text
+            #LINEで送られてきた文書を取得
+            word = event.message['text']
+            #日本語化
+            Wikipedia.Configure {
+              domain 'ja.wikipedia.org'
+              path   'w/api.php'
+            }
+            #wikipediaから情報を取得する
+            page = Wikipedia.find(word)
+            #内容とURLを返す
+            response = page.summary + "\n" + page.fullurl
             message = {
               type: 'text',
               text: response
@@ -65,10 +51,11 @@ class WebhookController < ApplicationController
             uri = URI.parse(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
             json = Net::HTTP.get(uri)
             result = JSON.parse(json)
+            weather_status = result['list'][0]['weather'][0]['main']
             temp = result['list'][0]['main']['temp']
+            #ケルビンをセルシウスに変換
             celsius = temp - 273.15
             celsius_round = celsius.round
-            weather_status = result['list'][0]['weather'][0]['main']
             weather = "weather：#{weather_status}" + "\n" + "temperature：#{celsius_round}℃"
 
             message = {
