@@ -4,7 +4,6 @@ class WebhookController < ApplicationController
   require 'net/http'
   require 'uri'
   require 'json'
-  require "open-uri"
   API_KEY = "07233f6700c510c4a78b505afa2bb250"
   BASE_URL = "http://api.openweathermap.org/data/2.5/forecast"
 
@@ -44,7 +43,7 @@ class WebhookController < ApplicationController
               type: 'text',
               text: response
             }
-            
+
           #位置情報が送信された場合
           when Line::Bot::Event::MessageType::Location
             latitude = event.message['latitude'] # 緯度
