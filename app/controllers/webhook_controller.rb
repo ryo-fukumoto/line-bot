@@ -68,10 +68,11 @@ class WebhookController < ApplicationController
             temp = result['list'][0]['main']['temp']
             celsius = temp - 273.15
             celsius_round = celsius.round
+            weather_status = result['list'][0]['weather'][0]['main']
 
             message = {
               type: 'text',
-              text: celsius_round
+              text: weather_status
             }
         end
       end
