@@ -71,7 +71,7 @@ class WebhookController < ApplicationController
 
             message = {
               type: 'text',
-              text: weather
+              text: celsius_round
             }
         end
       end
