@@ -65,7 +65,7 @@ class WebhookController < ApplicationController
             uri = URI.parse(BASE_URL + "?lat=#{latitude}&lon=#{longitude}&APPID=#{API_KEY}")
             json = Net::HTTP.get(uri)
             result = JSON.parse(json)
-            weather = result[:list][0][:main][:temp]
+            weather = result['main']['temp']
             message = {
               type: 'text',
               text: weather
