@@ -44,6 +44,7 @@ class WebhookController < ApplicationController
               type: 'text',
               text: response
             }
+            
           #位置情報が送信された場合
           when Line::Bot::Event::MessageType::Location
             latitude = event.message['latitude'] # 緯度
@@ -53,7 +54,7 @@ class WebhookController < ApplicationController
             result = JSON.parse(json)
             weather_status = result['list'][0]['weather'][0]['main']
             temp = result['list'][0]['main']['temp']
-            #ケルビンをセルシウスに変換
+            #ケルビンをセルシウス度に変換
             celsius = temp - 273.15
             celsius_round = celsius.round
             weather = "weather：#{weather_status}" + "\n" + "temperature：#{celsius_round}℃"
